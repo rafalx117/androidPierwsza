@@ -38,14 +38,21 @@ public class DisplayMessageActivity extends AppCompatActivity {
 
         listView = (ListView) findViewById(R.id.gradesListView);
         gradesList = new ArrayList<GradeModel>();
-        for(int i = 0; i< gradesCount; i++)
-        {
-            Random random = new Random();
-            int grade = random.nextInt(4)+2; //generujemy ocenę z zakresu 2-5
-            System.out.println("OCENA" + i + " : " + grade);
-            gradesList.add(new GradeModel("ocena " + (i+1), grade));
-        }
 
+        if( User.getGradesList() == null) //jeśli lista ocen w kontenerze jest pusta - uzupłniamy randomowymi ocenami
+        {
+            for(int i = 0; i< gradesCount; i++)
+            {
+                Random random = new Random();
+                int grade = random.nextInt(4)+2; //generujemy ocenę z zakresu 2-5
+                System.out.println("OCENA" + i + " : " + grade);
+                gradesList.add(new GradeModel("ocena " + (i+1), grade));
+            }
+        }
+        else
+            gradesList = User.getGradesList(); //jesli lista jes uzupełniona - ładujemy ją do pamięci
+
+        User.setGradesList(gradesList);
         MyArrayAdapter adapter = new MyArrayAdapter(this, gradesList);
         listView.setAdapter(adapter);
 

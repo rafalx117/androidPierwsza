@@ -1,5 +1,7 @@
 package com.example.student.pierwsza;
 
+import java.util.ArrayList;
+
 /**
  * Created by rafal on 26.03.2017.
  */
@@ -10,6 +12,17 @@ public class User
     private static String surname = null;
     private static int gradesCount = -1;
     private static boolean initialized = false;
+    private static ArrayList<GradeModel> gradesList = null;
+
+    public static ArrayList<GradeModel> getGradesList()
+    {
+        return gradesList;
+    }
+
+    public static void setGradesList(ArrayList<GradeModel> gradesList)
+    {
+        User.gradesList = gradesList;
+    }
 
     public static void setUser(String n, String s, int c)
     {
