@@ -1,5 +1,6 @@
 package com.example.student.pierwsza;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
@@ -20,26 +21,32 @@ public class MainActivity extends AppCompatActivity
     private Button mainButton;
     private float gradesAverage;
     boolean wrongNumber; //zmienna, która mówi czy dane do pola gradesEditText zostały wprowadzone poprawnie
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        context = this; //kontekst będzie potrzebny do metody changeMainButtonProperties do wyświetlenia komunikatu za pomocą makeToast
         mainButton = (Button) findViewById(R.id.mainButton);
         final EditText nameEditText = (EditText) findViewById(R.id.nameEditText);
         final EditText surnameEditText = (EditText) findViewById(R.id.surnameEditText);
         final EditText gradesEditText = (EditText) findViewById(R.id.gradesEditText);
 
         //------------------------ odbieramy dane z aktywności DisplayMessage ---------------------------
-        if (User.getName() != null && User.getName() != null && User.getGradesCount() != -1) //jeśli użytkownik zostal zapisany w aktywnosci DisplayMeessage - zostaje on wyświetlony; null, null i -1 to startowe wartosci klasy User i oznaczają, że jeszcze nie został wpisany żaden użytkownik
+        if (User.isInitialized()) //jeśli użytkownik zostal zapisany w aktywnosci DisplayMeessage - zostaje on wyświetlony
         {
             nameEditText.setText(User.getName().toString());
             surnameEditText.setText(User.getSurname().toString());
             gradesEditText.setText(String.valueOf(User.getGradesCount()));
         } else
         {
-            Toast toast = Toast.makeText(this, "Odczytywanie danych nie powiodło się", Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(this, "Witaj!", Toast.LENGTH_LONG);
+            toast.show();
+            nameEditText.setText("");
+            surnameEditText.setText("");
+            gradesEditText.setText("");
         }
 
         try //próbujemy odczytać średnią z aktywności DisplayMessageActivity
@@ -57,13 +64,14 @@ public class MainActivity extends AppCompatActivity
                 gradesAvg.setVisibility(View.VISIBLE);
                 gradesAvg.setTextColor(Color.RED);
                 mainButton.setVisibility(View.VISIBLE);
-                changeMainButtonProperties("Super!");
+                changeMainButtonProperties("Ups!"); //metoda odpowiadająca za zmianę właściwości przycisku na stronie głównej (pod formularzem)
 
             } else
             {
                 gradesAvg.setVisibility(View.VISIBLE);
                 gradesAvg.setTextColor(Color.GREEN);
-                changeMainButtonProperties("Ups!");
+                mainButton.setVisibility(View.VISIBLE);
+                changeMainButtonProperties("Super!");
 
             }
         } catch (Exception ex)
@@ -243,7 +251,7 @@ public class MainActivity extends AppCompatActivity
         toast.show();
     }
 
-    public void changeMainButtonProperties(String text)
+    public void changeMainButtonProperties(final String text)
     {
         mainButton.setText(text);
         mainButton.setVisibility(View.VISIBLE);
@@ -252,21 +260,20 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view)
             {
+                String message;
+                if(text.equals("Super!"))
+                    message = "Gratulacje!";
+                else
+                    message = "Wysyłam podanie o poprawkę.";
+
+                Toast toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
+                toast.show();
+
+                User.setInitialized(false);
+                finish();
 
             }
         });
     }
 
-//    public void clearEditText(View view) {
-//        EditText nameEditText = (EditText)findViewById(R.id.nameEditText);
-//        EditText surnameEditText = (EditText)findViewById(R.id.surnameEditText);
-//        EditText gradesEditText = (EditText)findViewById(R.id.gradesEditText);
-//
-//        if(nameEditText.getText().toString().equals("Wprowadź imię") && nameEditText.hasFocus())
-//            nameEditText.setText("");
-//        if(surnameEditText.getText().toString().equals("Wprowadź nazwisko") && surnameEditText.hasFocus())
-//            surnameEditText.setText("");
-//        if(gradesEditText.getText().toString().equals("Wprowadź ilość ocen") && gradesEditText.hasFocus())
-//            gradesEditText.setText("");
-//    }
 }

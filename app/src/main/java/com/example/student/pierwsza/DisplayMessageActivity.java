@@ -61,6 +61,8 @@ public class DisplayMessageActivity extends AppCompatActivity {
         gradesAverage = gradesAverage/gradesCount;
         intent.putExtra("gradesAverage", gradesAverage);
         startActivity(intent);
+
+        finish();
     }
 
 }
