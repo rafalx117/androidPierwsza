@@ -1,7 +1,6 @@
 package com.example.student.pierwsza;
 
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,21 +12,32 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
 public class MainActivity extends AppCompatActivity
 {
 
     public static final String EXTRA_MESSAGE = "com.example.myfirstapp.MESSAGE";
     public static int gradesCount = 0;
-    private Button button;
+    private Button mainButton;
     private float gradesAverage;
+    boolean wrongNumber; //zmienna, która mówi czy dane do pola gradesEditText zostały wprowadzone poprawnie
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mainButton = (Button) findViewById(R.id.mainButton);
+        final EditText nameEditText = (EditText) findViewById(R.id.nameEditText);
+        final EditText surnameEditText = (EditText) findViewById(R.id.surnameEditText);
+        final EditText gradesEditText = (EditText) findViewById(R.id.gradesEditText);
+
+        //------------------------ odbieramy dane z aktywności DisplayMessage ---------------------------
+        if(User.getName()!=null && User.getName()!=null && User.getGradesCount()!=-1) //jeśli użytkownik zostal zapisany w aktywnosci DisplayMeessage - zostaje on wyświetlony; null, null i -1 to startowe wartosci klasy User i oznaczają, że jeszcze nie został wpisany żaden użytkownik
+        {
+            nameEditText.setText(User.getName().toString());
+            surnameEditText.setText(User.getSurname().toString());
+            gradesEditText.setText(String.valueOf(User.getGradesCount()));
+        }
 
         try //próbujemy odczytać średnią z aktywności DisplayMessageActivity
         {
@@ -43,21 +53,23 @@ public class MainActivity extends AppCompatActivity
             {
                 gradesAvg.setVisibility(View.VISIBLE);
                 gradesAvg.setTextColor(Color.RED);
+                mainButton.setVisibility(View.VISIBLE);
+                changeMainButtonProperties("Super!");
+
             } else
             {
                 gradesAvg.setVisibility(View.VISIBLE);
                 gradesAvg.setTextColor(Color.GREEN);
+                changeMainButtonProperties("Ups!");
+
             }
         } catch (Exception ex)
         {
             System.out.println(ex.getMessage());
         }
+        //------------------ koniec odbierania danych -------------------------------------------------------------------------------
 
 
-        button = (Button) findViewById(R.id.button);
-        final EditText nameEditText = (EditText) findViewById(R.id.nameEditText);
-        final EditText surnameEditText = (EditText) findViewById(R.id.surnameEditText);
-        final EditText gradesEditText = (EditText) findViewById(R.id.gradesEditText);
 
         nameEditText.setOnFocusChangeListener(new View.OnFocusChangeListener()
         {
@@ -83,7 +95,7 @@ public class MainActivity extends AppCompatActivity
             {
                 if (!hasFocus)
                 {
-                    if (nameEditText.getText().toString().isEmpty())
+                    if (surnameEditText.getText().toString().isEmpty())
                     {
                         validationEmptyErrorToast();
                     }
@@ -116,24 +128,32 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count)
             {
-                boolean parseFailure = true; //zmienna sterująca, która pozwoli nam wyświetlić ewentualny komunikat o nieudanej próbie rzutowania wartosci pola gradesEditText na liczbe
                 int grade = 0;
 
-                try //próbujemy wyłuskać ilość ocen z pola gradesEditText
-                {
-                    grade = Integer.parseInt(gradesEditText.getText().toString());
-                    parseFailure = false;
-                } catch (NumberFormatException ex)
-                {
-                    parseFailure = true;
-                }
+//                if (gradesEditText.getText().toString().isEmpty()) //jeśli pole gradesEditText jest puste - wyświetlamy stosowny komunikat
+//                {
+//                    validationEmptyErrorToast();
+//                }
+//                else
+//                {
+                    try //próbujemy wyłuskać ilość ocen z pola gradesEditText
+                    {
+                        grade = Integer.parseInt(gradesEditText.getText().toString());
+                    }
+                    catch (NumberFormatException ex)
+                    {
+                        numberErrorToast();
+                    }
+                //}
 
-                if (nameEditText.getText().toString().isEmpty())
-                {
-                    validationEmptyErrorToast();
-                } else if (parseFailure || grade < 5 || grade > 15)
+                if (grade < 5 || grade > 15)
                 {
                     numberErrorToast();
+                    wrongNumber = true;
+                }
+                else
+                {
+                    wrongNumber = false;
                 }
 
                 setButtonVisibility();
@@ -149,40 +169,20 @@ public class MainActivity extends AppCompatActivity
         });
 
 
-//        gradesEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-//
-//            @Override
-//            public void onFocusChange(View v, boolean hasFocus) {
-//
-//
-//                boolean parseFailure = true;
-//                int grade = 0;
-//                try
-//                {
-//                    grade = Integer.parseInt(gradesEditText.getText().toString());
-//                    parseFailure = false;
-//                }
-//                catch (NumberFormatException ex)
-//                {
-//                    parseFailure = true;
-//                }
-//
-//                if(!hasFocus){
-//                    if(nameEditText.getText().toString().isEmpty()) {
-//                        validationEmptyErrorToast();
-//                        gradesTextFilled = false;
-//                    }
-//                    else if(parseFailure || grade < 5 || grade > 15  ) {
-//                        numberErrorToast();
-//                        gradesTextFilled = false;
-//                    }
-//                    else
-//                        gradesTextFilled = true;
-//                }
-//
-//            buttonVisibility();
-//            }
-//        });
+        gradesEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+
+                if(!hasFocus){
+                    if(gradesEditText.getText().toString().isEmpty()) {
+                        validationEmptyErrorToast();
+                     }
+
+                }
+            setButtonVisibility();
+            }
+        });
 
 
 //
@@ -202,11 +202,12 @@ public class MainActivity extends AppCompatActivity
     public void sendMessage(View view)
     {
         Intent intent = new Intent(this, DisplayMessageActivity.class);
-        EditText editText = (EditText) findViewById(R.id.nameEditText);
-        String message = editText.getText().toString();
-        intent.putExtra(EXTRA_MESSAGE, message);
+        EditText nameEditText = (EditText) findViewById(R.id.nameEditText);
+        EditText surnameEditText = (EditText) findViewById(R.id.surnameEditText) ;
+        EditText gradesEditText = (EditText) findViewById(R.id.gradesEditText) ;
 
-        gradesCount = Integer.parseInt(((EditText) findViewById(R.id.gradesEditText)).getText().toString());
+        gradesCount = Integer.parseInt(gradesEditText.getText().toString());
+        User.setUser(nameEditText.getText().toString(), surnameEditText.getText().toString(), gradesCount); //zapisujemy użytkownika
         intent.putExtra("gradesCount", gradesCount);
         startActivity(intent);
     }
@@ -220,13 +221,15 @@ public class MainActivity extends AppCompatActivity
 
         if (
                 nameEditText.getText().toString().isEmpty() ||
-                        surnameEditText.getText().toString().isEmpty() ||
-                        gradesEditText.getText().toString().isEmpty())
+                surnameEditText.getText().toString().isEmpty() ||
+                gradesEditText.getText().toString().isEmpty() ||
+                wrongNumber
+                )
         {
-            button.setVisibility(View.INVISIBLE);
+            mainButton.setVisibility(View.INVISIBLE);
         } else
         {
-            button.setVisibility(View.VISIBLE);
+            mainButton.setVisibility(View.VISIBLE);
         }
 
     }
@@ -240,8 +243,23 @@ public class MainActivity extends AppCompatActivity
 
     public void numberErrorToast()
     {
+        wrongNumber = true;
         Toast toast = Toast.makeText(this, "Liczba musi być z zakresu 5-15", Toast.LENGTH_SHORT);
         toast.show();
+    }
+
+    public void changeMainButtonProperties(String text)
+    {
+        mainButton.setText(text);
+        mainButton.setVisibility(View.VISIBLE);
+        mainButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+
+            }
+        });
     }
 
 //    public void clearEditText(View view) {
