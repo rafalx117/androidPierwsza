@@ -3,8 +3,8 @@ package com.example.student.pierwsza;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -61,21 +61,19 @@ public class MainActivity extends AppCompatActivity
                 gradesAvg.setVisibility(View.INVISIBLE);
             }
             else if (gradesAverage < 3) //jeśli średnia nie wynosi 1 - oznacza to, że średnia została ustawiona w aktywności DisplayMessage
-            {
+            {//wówczas zmieniamy kolor labelki ze średnią na zielony, ustawiamy ja jako widoczną oraz zmieniamy właściwości przycisku
                 gradesAvg.setVisibility(View.VISIBLE);
                 gradesAvg.setTextColor(Color.RED);
-                mainButton.setVisibility(View.VISIBLE);
                 changeMainButtonProperties("Ups!"); //metoda odpowiadająca za zmianę właściwości przycisku na stronie głównej (pod formularzem)
 
-            } else
+            } else//jeśli średnia >= 3, zmieniamy kolor labelki na czerwon, ustawiamy jej widocznośc i zmieniamy właściwości przycisku
             {
                 gradesAvg.setVisibility(View.VISIBLE);
                 gradesAvg.setTextColor(Color.GREEN);
-                mainButton.setVisibility(View.VISIBLE);
                 changeMainButtonProperties("Super!");
 
             }
-        } catch (Exception ex) //
+        } catch (Exception ex) //jeśli odczytanie danych nie powiodło się - wyświetlamy odpowiedni komunikat
         {
             Toast toast = Toast.makeText(this,"Aplikacja napotkała na problem podczas odczytywania danych uzytkownika. Uruchom ją ponownie.", Toast.LENGTH_LONG);
             System.out.println(ex.getMessage());
@@ -90,7 +88,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2)
             {
-                setButtonVisibility();
+                setButtonVisibility(); //metoda sprawdzająca czy należy pokazać przycisk
             }
 
             // -------- poniższe metody są nieużywane, ale musialy zostać wprowadzone ze względu na TextWatcher -----------------
@@ -114,7 +112,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count)
             {
-                int grade = 0;
+                int grade = 0; //tu będzie przetrzymywana wartość odczytana z kontrolki gradesEditText
 
                 try //próbujemy wyłuskać ilość ocen z pola gradesEditText
                 {
@@ -124,10 +122,10 @@ public class MainActivity extends AppCompatActivity
                     numberErrorToast();
                 }
 
-                if (grade < 5 || grade > 15)
+                if (grade < 5 || grade > 15) //jeśli udało odczytać się ocenę, ale jest ona sprzeczna z zalożeniami - wyświetlamy odpowiedni komunikat
                 {
                     numberErrorToast();
-                    wrongNumber = true;
+                    wrongNumber = true; //wrongnumber potrzebujemy w metodzie setButtonVisibility
                 } else
                 {
                     wrongNumber = false;
@@ -150,7 +148,7 @@ public class MainActivity extends AppCompatActivity
 
         });
 
-
+        // ustawiam listener na zmiane focusu dla gradesEditText
         gradesEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() //ustawiamy listener na zmianę focusu dla gradesEditText
         {
             @Override
@@ -206,15 +204,15 @@ public class MainActivity extends AppCompatActivity
 
     public void sendMessage(View view) //metoda wysyłająca dane do drugiej aktywności
     {
-        Intent intent = new Intent(this, DisplayMessageActivity.class);
+        Intent intent = new Intent(this, DisplayMessageActivity.class); //tworzę nową intencję
         EditText nameEditText = (EditText) findViewById(R.id.nameEditText);
         EditText surnameEditText = (EditText) findViewById(R.id.surnameEditText);
         EditText gradesEditText = (EditText) findViewById(R.id.gradesEditText);
 
         gradesCount = Integer.parseInt(gradesEditText.getText().toString());
         User.setUser(nameEditText.getText().toString(), surnameEditText.getText().toString(), gradesCount); //zapisujemy użytkownika w statycznej klasie USer
-        intent.putExtra("gradesCount", gradesCount);
-        startActivity(intent);
+        intent.putExtra("gradesCount", gradesCount); //przekazujemy informacje o ilości ocen do drugiej aktywności
+        startActivity(intent); //uruchamiamy drugą intencję
     }
 
 
@@ -224,17 +222,17 @@ public class MainActivity extends AppCompatActivity
         EditText surnameEditText = (EditText) findViewById(R.id.surnameEditText);
         EditText gradesEditText = (EditText) findViewById(R.id.gradesEditText);
 
-        if (
+        if ( //sprawdzamy, czy pola formularza są wypelnione
                 nameEditText.getText().toString().isEmpty() ||
                         surnameEditText.getText().toString().isEmpty() ||
                         gradesEditText.getText().toString().isEmpty() ||
-                        wrongNumber //jeśli liczba ocen nie nalezy do odpowiedniego przedziału to wrongNumber = true
+                        wrongNumber //aplikacja ustawi wrongNumber = true jeśli liczba ocen nie nalezy do odpowiedniego przedziału
                 )
         {
-            mainButton.setVisibility(View.INVISIBLE);
+            mainButton.setVisibility(View.INVISIBLE); //uukrywamy przycisk
         } else
         {
-            mainButton.setVisibility(View.VISIBLE);
+            mainButton.setVisibility(View.VISIBLE); //pokazujemy przycisk
         }
 
     }
@@ -253,8 +251,10 @@ public class MainActivity extends AppCompatActivity
         toast.show();
     }
 
+    //metoda odpowiadająca za zmianę właściwości przycisku po powrocie do aktywności MainActivity z aktywności DisplayMessageActivity
     public void changeMainButtonProperties(final String text)
     {
+        //zmieniamy tekst, widocznośc i widocznośc przycisku oraz ustawiamy listener reagujący na kliknięcie, które wyświetli komunikat adekwatny do uzyskanej średniej ocen
         mainButton.setText(text);
         mainButton.setVisibility(View.VISIBLE);
         mainButton.setOnClickListener(new View.OnClickListener()
@@ -271,8 +271,8 @@ public class MainActivity extends AppCompatActivity
                 Toast toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
                 toast.show();
 
-                User.setInitialized(false);
-                finish();
+                User.setInitialized(false); //uznajemy, że aplikacja kończy działanie, więc 'zapominamy' użytkownika, tzn nie będzie on wczytywany do aplikacji
+                finish();//zamykamy okno aktywności
 
             }
         });
