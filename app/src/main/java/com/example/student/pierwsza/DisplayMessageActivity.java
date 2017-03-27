@@ -34,7 +34,7 @@ public class DisplayMessageActivity extends AppCompatActivity {
         TextView textView = (TextView) findViewById(R.id.textView);
 
         gradesCount = (int) intent.getIntExtra("gradesCount", 1);
-        textView.setText(String.valueOf(gradesCount));
+        textView.setText("Ilośc ocen: " + String.valueOf(gradesCount));
 
         listView = (ListView) findViewById(R.id.gradesListView);
         gradesList = new ArrayList<GradeModel>();

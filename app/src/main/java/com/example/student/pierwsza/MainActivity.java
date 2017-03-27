@@ -40,26 +40,27 @@ public class MainActivity extends AppCompatActivity
             nameEditText.setText(User.getName().toString());
             surnameEditText.setText(User.getSurname().toString());
             gradesEditText.setText(String.valueOf(User.getGradesCount()));
-        } else
+        } else //w przeciwnym wypadku pola formularza są czysczone
         {
-            Toast toast = Toast.makeText(this, "Witaj!", Toast.LENGTH_LONG);
-            toast.show();
+//            Toast toast = Toast.makeText(this, "Witaj!", Toast.LENGTH_LONG);
+//            toast.show();
             nameEditText.setText("");
             surnameEditText.setText("");
             gradesEditText.setText("");
         }
 
-        try //próbujemy odczytać średnią z aktywności DisplayMessageActivity
+        try //próbujemy odczytać średnią przekazaną z aktywności DisplayMessageActivity
         {
             Intent intent = getIntent();
-            gradesAverage = intent.getFloatExtra("gradesAverage", 1);
+            gradesAverage = intent.getFloatExtra("gradesAverage", 1); //1 to wartość domyślna średniej ocen
             TextView gradesAvg = (TextView) findViewById(R.id.averageTextView);
             gradesAvg.setText("Średnia wynosi: " + String.valueOf(gradesAverage));
 
             if (gradesAverage == 1) //domyślna (pierwotna) wartość średniej wynosi 1 - wówczas chowamy labelke
             {
                 gradesAvg.setVisibility(View.INVISIBLE);
-            } else if (gradesAverage < 3) //jeśli średnia nie wynosi 1 - oznacza to, że średnia została ustawiona w aktywności DisplayMessage
+            }
+            else if (gradesAverage < 3) //jeśli średnia nie wynosi 1 - oznacza to, że średnia została ustawiona w aktywności DisplayMessage
             {
                 gradesAvg.setVisibility(View.VISIBLE);
                 gradesAvg.setTextColor(Color.RED);
@@ -74,8 +75,9 @@ public class MainActivity extends AppCompatActivity
                 changeMainButtonProperties("Super!");
 
             }
-        } catch (Exception ex)
+        } catch (Exception ex) //
         {
+            Toast toast = Toast.makeText(this,"Aplikacja napotkała na problem podczas odczytywania danych uzytkownika. Uruchom ją ponownie.", Toast.LENGTH_LONG);
             System.out.println(ex.getMessage());
         }
         //------------------ koniec odbierania danych -------------------------------------------------------------------------------
