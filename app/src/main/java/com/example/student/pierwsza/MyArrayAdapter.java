@@ -31,10 +31,12 @@ public class MyArrayAdapter extends ArrayAdapter<GradeModel>
 
         if (convertView == null)
         {   //tworzymy nowt element listy na podstwie pliku grade.xml
-            LayoutInflater layoutInflater = context.getLayoutInflater();
+            LayoutInflater layoutInflater = context.getLayoutInflater(); //za pomocą LayoutInflatera tworzymy nowe wiersze z ocenami
             view = layoutInflater.inflate(R.layout.grade, null);
 
             RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.radioGroup);
+            //dodaję listener odpowiadający za aktualizację listy ocen (listy liczb, nie listy widoku)
+            //bez niego po ręcznej zmianie ocen nie mamy zaktualizowanej listy ocen i średnia jest liczoona niepoprawnie
             radioGroup.setOnCheckedChangeListener(
                     new RadioGroup.OnCheckedChangeListener()
                     {
