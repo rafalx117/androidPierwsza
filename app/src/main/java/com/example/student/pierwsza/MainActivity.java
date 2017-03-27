@@ -59,8 +59,7 @@ public class MainActivity extends AppCompatActivity
             if (gradesAverage == 1) //domyślna (pierwotna) wartość średniej wynosi 1 - wówczas chowamy labelke
             {
                 gradesAvg.setVisibility(View.INVISIBLE);
-            }
-            else if (gradesAverage < 3) //jeśli średnia nie wynosi 1 - oznacza to, że średnia została ustawiona w aktywności DisplayMessage
+            } else if (gradesAverage < 3) //jeśli średnia nie wynosi 1 - oznacza to, że średnia została ustawiona w aktywności DisplayMessage
             {//wówczas zmieniamy kolor labelki ze średnią na zielony, ustawiamy ja jako widoczną oraz zmieniamy właściwości przycisku
                 gradesAvg.setVisibility(View.VISIBLE);
                 gradesAvg.setTextColor(Color.RED);
@@ -75,12 +74,10 @@ public class MainActivity extends AppCompatActivity
             }
         } catch (Exception ex) //jeśli odczytanie danych nie powiodło się - wyświetlamy odpowiedni komunikat
         {
-            Toast toast = Toast.makeText(this,"Aplikacja napotkała na problem podczas odczytywania danych uzytkownika. Uruchom ją ponownie.", Toast.LENGTH_LONG);
+            Toast toast = Toast.makeText(this, "Aplikacja napotkała na problem podczas odczytywania danych uzytkownika. Uruchom ją ponownie.", Toast.LENGTH_LONG);
             System.out.println(ex.getMessage());
         }
         //------------------ koniec odbierania danych -------------------------------------------------------------------------------
-
-
 
 
         TextWatcher textWatcher = new TextWatcher() //tworzymy prosty TextWatcher, który będzie sprawdzał podczas wprowadzaniua tekstu, czy należy pokazac przycisk
@@ -263,7 +260,7 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view)
             {
                 String message;
-                if(text.equals("Super!"))
+                if (text.equals("Super!"))
                     message = "Gratulacje!";
                 else
                     message = "Wysyłam podanie o poprawkę.";

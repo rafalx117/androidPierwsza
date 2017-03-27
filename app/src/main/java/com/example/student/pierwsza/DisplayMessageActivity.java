@@ -2,74 +2,65 @@ package com.example.student.pierwsza;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Layout;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
-public class DisplayMessageActivity extends AppCompatActivity {
-
+public class DisplayMessageActivity extends AppCompatActivity
+{
     private ArrayList<GradeModel> gradesList;
     int gradesCount;
     private ListView listView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_message);
 
-        // Get the Intent that started this activity and extract the string
-        Intent intent = getIntent();
-        String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
-
-        // Capture the layout's TextView and set the string as its text
+        Intent intent = getIntent(); //pobieramy intencję, która zainicjowała bieżącą aktywność
+        gradesCount = (int) intent.getIntExtra("gradesCount", 1); //pobieramy przekazane dane (ilość ocen); 1 w drugim parametrze to domyślna wartość
         TextView textView = (TextView) findViewById(R.id.textView);
+        textView.setText("Ilośc ocen: " + String.valueOf(gradesCount)); //ustwiamy tekst w lebelce informacyjnej
 
-        gradesCount = (int) intent.getIntExtra("gradesCount", 1);
-        textView.setText("Ilośc ocen: " + String.valueOf(gradesCount));
+        listView = (ListView) findViewById(R.id.gradesListView); //zmienna odpowiadająca wizualnej liście ocen
+        gradesList = new ArrayList<GradeModel>(); //lista przechowująca wartosci ocen
 
-        listView = (ListView) findViewById(R.id.gradesListView);
-        gradesList = new ArrayList<GradeModel>();
-
-        if( User.getGradesList() == null) //jeśli lista ocen w kontenerze jest pusta - uzupłniamy randomowymi ocenami
+        if (User.getGradesList() == null) //jeśli lista ocen w kontenerze jest pusta - uzupłniamy randomowymi ocenami;
         {
-            for(int i = 0; i< gradesCount; i++)
+            for (int i = 0; i < gradesCount; i++)
             {
                 Random random = new Random();
-                int grade = random.nextInt(4)+2; //generujemy ocenę z zakresu 2-5
+                int grade = random.nextInt(4) + 2; //generujemy ocenę z zakresu 2-5
                 System.out.println("OCENA" + i + " : " + grade);
-                gradesList.add(new GradeModel("ocena " + (i+1), grade));
+                gradesList.add(new GradeModel("ocena " + (i + 1), grade));
             }
-        }
-        else
+            User.setGradesList(gradesList); //usupelnioną listę ocen zapisujemy w kontenerze w celu późniejszego użycia
+        } else
             gradesList = User.getGradesList(); //jesli lista jes uzupełniona - ładujemy ją do pamięci
 
-        User.setGradesList(gradesList);
-        MyArrayAdapter adapter = new MyArrayAdapter(this, gradesList);
-        listView.setAdapter(adapter);
+        MyArrayAdapter adapter = new MyArrayAdapter(this, gradesList); //tworzymy instancję interaktywnego adaptera
+        listView.setAdapter(adapter); //bindujemy adapter z widokiem listy
 
     }
 
-
-    public void sendMessage(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
+    //metoda przesyłająca dane do aktywności MainActivity (prześlemy średnią ocen)
+    public void sendMessage(View view)
+    {
+        Intent intent = new Intent(this, MainActivity.class); //tworzymy nową intencję
         float gradesAverage = 0;
-        for(GradeModel g : gradesList)
-            gradesAverage+=g.getGrade();
 
-        gradesAverage = gradesAverage/gradesCount;
-        intent.putExtra("gradesAverage", gradesAverage);
-        startActivity(intent);
+        for (GradeModel g : gradesList) //obliczamy średnią ocen na podstawie listy gradesList
+            gradesAverage += g.getGrade();
 
-        finish();
+        gradesAverage = gradesAverage / gradesCount;
+        intent.putExtra("gradesAverage", gradesAverage); //ustawiamy daną do przesłania
+        startActivity(intent); //startujemy intencję
+        finish(); //zamkyamy bieżącą aktywność
     }
 
 }
